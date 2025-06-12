@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, Request, status
+from fastapi import FastAPI, Form, Request, status, HTTPException
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -7,19 +7,20 @@ from pydantic import BaseModel
 from typing import List
 import uvicorn
 from datetime import datetime
+import os
 
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static/static"), name="react_static")
 templates = Jinja2Templates(directory="templates")
 
 class Post(BaseModel):
@@ -35,9 +36,11 @@ class PostResponse(BaseModel):
 posts_db = []
 
 @app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    print('Request for index page received')
-    return templates.TemplateResponse('index.html', {"request": request})
+async def index():
+    try:
+        return FileResponse('static/index.html')
+    except FileNotFoundError:
+        return templates.TemplateResponse('index.html', {"request": Request})
 
 @app.get('/favicon.ico')
 async def favicon():
@@ -68,6 +71,19 @@ async def create_post(post: Post):
     }
     posts_db.append(new_post)
     return new_post
+
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+async def serve_spa(full_path: str):
+    if full_path.startswith("api/"):
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+    
+    if os.path.exists(f"static/{full_path}"):
+        return FileResponse(f"static/{full_path}")
+    
+    if os.path.exists("static/index.html"):
+        return FileResponse("static/index.html")
+    
+    return templates.TemplateResponse('index.html', {"request": Request})
 
 if __name__ == '__main__':
     uvicorn.run('main:app', host='0.0.0.0', port=8000)
