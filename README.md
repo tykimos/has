@@ -1,39 +1,88 @@
----
-page_type: sample
-description: "A minimal sample app that can be used to demonstrate deploying FastAPI apps to Azure App Service."
-languages:
-- python
-products:
-- azure
-- azure-app-service
----
+# HAS (Hello Azure Service)
 
-# Deploy a Python (FastAPI) web app to Azure App Service - Sample Application
+A full-stack web application with FastAPI backend and React frontend.
 
-This is the sample FastAPI application for the Azure Quickstart [Deploy a Python (Django, Flask or FastAPI) web app to Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/quickstart-python). For instructions on how to create the Azure resources and deploy the application to Azure, refer to the Quickstart article.
+## Project Structure
 
-Sample applications are available for the other frameworks here:
-- Django [https://github.com/Azure-Samples/msdocs-python-django-webapp-quickstart](https://github.com/Azure-Samples/msdocs-python-django-webapp-quickstart)
-- Flask [https://github.com/Azure-Samples/msdocs-python-flask-webapp-quickstart](https://github.com/Azure-Samples/msdocs-python-flask-webapp-quickstart)
+```
+has/
+├── backend/          # FastAPI backend
+├── frontend/         # React TypeScript frontend
+└── openapi.yaml      # API specification
+```
 
-If you need an Azure account, you can [create one for free](https://azure.microsoft.com/en-us/free/).
+## Getting Started
 
-## Local Testing
+### Prerequisites
 
-To try the application on your local machine:
+- Python 3.13+
+- Node.js 18+
+- npm or yarn
 
-### Install the requirements
+### Backend Setup
 
-`pip install -r requirements.txt`
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
 
-### Start the application
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-`uvicorn main:app --reload`
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Example call
+4. Run the FastAPI server:
+   ```bash
+   python main.py
+   ```
 
-http://127.0.0.1:8000/
+The backend will be available at `http://localhost:8000`
 
-## Next Steps
+### Frontend Setup
 
-To learn more about FastAPI, see [FastAPI](https://fastapi.tiangolo.com/).
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+
+The frontend will be available at `http://localhost:3000`
+
+### Production Build
+
+To build the frontend for production:
+
+```bash
+cd frontend
+npm run build
+```
+
+The build files will be created in `frontend/build/` directory.
+
+## Development
+
+- Backend API documentation is available at `http://localhost:8000/docs` when running the FastAPI server
+- The OpenAPI specification is available in `openapi.yaml`
+
+## Deployment
+
+The application is configured for deployment to Azure App Service. The GitHub Actions workflow automatically:
+
+1. Builds the React frontend
+2. Copies the build files to `backend/static/`
+3. Deploys the FastAPI backend with the static frontend files

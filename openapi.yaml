@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: HAS API
+  description: HAS (Hello Azure Service) API
+  version: 1.0.0
+  contact:
+    name: HAS Support
+    email: support@has.com
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://has-app.azurewebsites.net
+    description: Production server
+paths:
+  /:
+    get:
+      summary: Welcome page
+      description: Returns the main welcome page
+      responses:
+        '200':
+          description: HTML welcome page
+          content:
+            text/html:
+              schema:
+                type: string
+  /hello:
+    get:
+      summary: Hello page
+      description: Returns a hello page
+      responses:
+        '200':
+          description: HTML hello page
+          content:
+            text/html:
+              schema:
+                type: string
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Error message
+      required:
+        - detail
